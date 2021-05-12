@@ -5,7 +5,7 @@ module.exports = async(req, res)=>{
             {$set: req.body,last_update: Date.now()},
             {runValidators:true,upsert:true,new:true},async(er,dt)=>{
             if(er) return res.status(400).send({type:'error',message: er.message});
-            return res.status(200).send({type:'success',message:'Project Added'});
+            return res.status(200).send({type:'success',message:'Task updated'});
         })
     } catch (error) {
         console.error(error);
