@@ -1,7 +1,6 @@
 const Team = require('../../models/projectTeamModel');
 
 module.exports = async(req,res)=>{
-    // const { projectRef, teamLeader, teamMembers} = req.body;
     try {
         Team.findOneAndUpdate({projectRef: req.body.projectRef},{$set: req.body},
             {runValidators:true,upsert:true,new:true},async(err,dt)=>{
