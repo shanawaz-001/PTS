@@ -71,7 +71,7 @@ module.exports.projectsPM = async(req, res) =>{
 module.exports.projectsTL = async(req, res) =>{
     const token = req.header('authorization');
     const decode = jwt.decode(token);
-    await Team.find({},{teamLeader: decode.id}).populate('projectRef','projectTitle').sort('projectTitle')
+    await Team.find({},{teamLeader: decode.id}).populate('projectRef').sort('projectTitle')
     .then(data => res.send(data))
     .catch(error => console.error(error))
 }
