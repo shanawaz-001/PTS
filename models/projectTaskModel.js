@@ -16,7 +16,7 @@ const projectTaskSchema = new mongoose.Schema({
         type: String,
         required: true,
         validate: {
-            validator: value => ["NOT_STARTED","ACTIVE","ON_HOLD","COMPLETED","BACKLOG"].includes(value),
+            validator: value => ["NOT_STARTED","ACTIVE","ON_HOLD","COMPLETED"].includes(value),
             message: 'Invalid Status'
           },
           default: 'NOT_STARTED'
