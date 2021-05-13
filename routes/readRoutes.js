@@ -35,7 +35,7 @@ module.exports.projects = async(req, res) =>{
 
 //Project Tasks-----------------------------------------------
 module.exports.projectTasks = async(req, res)=>{
-    await Task.find({projectRef: req.params.projectRef})
+    await Task.find({projectRef: req.params.projectRef}).sort({value:'HIGH',order:1},{value:'NORMAL',order:2},{value:'LOW',order:3})
     .then(data => res.send(data))
     .catch(error => console.error(error))
 }
