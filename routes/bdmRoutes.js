@@ -4,7 +4,7 @@ router.get('/emp', require('../routes/readRoutes').empDev);
 //View Projects
 router.get('/project', require('../routes/readRoutes').projects);
 //View Tasks
-router.get('/project/tasks/:projectRef',require('../routes/readRoutes').projectTasks);
+router.post('/project/tasks/:projectRef',require('../routes/readRoutes').projectTasks);
 //View Teams
 router.get('/project/teams/:projectRef',require('../routes/readRoutes').projectTeams);
 //Add project
