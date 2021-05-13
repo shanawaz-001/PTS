@@ -19,39 +19,27 @@ module.exports.empInactive = async(req, res)=>{
     .catch(error => console.error(error))
 }
 
-
-//All Projects----------------------------------------
-
-module.exports.projects = async(req, res) =>{
-    await Project.find().sort('projectTitle').populate('managerId','name')
-    .then(data => res.send(data))
-    .catch(error => console.error(error))
-}
-//All Tasks---------------------------------------------
-module.exports.tasks = async(req, res)=>{
-    await Task.find({projectRef: req.params.projectRef})
-    .then(data => res.send(data))
-    .catch(error => console.error(error))
-}
-//All Teams---------------------------------------------
-module.exports.teams = async(req, res)=>{
-    await Task.find({projectRef: req.params.projectRef})
-    .then(data => res.send(data))
-    .catch(error => console.error(error))
-}
 //All developers----------------------------------------
 module.exports.empDev = async(req, res)=>{
     await Emp.find({status: process.env.ACTIVE,designation: process.env.DEV}).sort('employeeId')
     .then(data => res.send(data))
     .catch(error => console.error(error))
 }
+
+//All Projects----------------------------------------
+module.exports.projects = async(req, res) =>{
+    await Project.find().sort('projectTitle').populate('managerId','name')
+    .then(data => res.send(data))
+    .catch(error => console.error(error))
+}
+
 //Project Tasks-------------------------------------------
 module.exports.projectTasks = async(req, res)=>{
     await Task.find({projectRef: req.params.projectRef})
     .then(data => res.send(data))
     .catch(error => console.error(error))
 }
-//View Teams-----------------------------------------------
+//Project Teams-----------------------------------------------
 module.exports.projectTeams = async(req, res)=>{
     await Team.find({projectRef: req.params.projectRef})
     .then(data => res.send(data))
@@ -71,7 +59,7 @@ module.exports.projectsPM = async(req, res) =>{
 module.exports.projectsTL = async(req, res) =>{
     const token = req.header('authorization');
     const decode = jwt.decode(token);
-    await Team.find({teamLeader: decode.id}).populate('projectRef').sort('projectTitle')
+    await Team.find({teamLeader: decode.id}).populate('projectRef teamMembers.devRef').sort('projectTitle')
     .then(data => res.send(data))
     .catch(error => console.error(error))
 }
