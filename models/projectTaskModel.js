@@ -23,7 +23,6 @@ const projectTaskSchema = new mongoose.Schema({
     },
     createdDate:{
         type: Date,
-        required:[true, ''],
         default: Date.now
     },
     last_update:{
@@ -35,7 +34,6 @@ const projectTaskSchema = new mongoose.Schema({
     },
     credits:{
         type: Number,
-        required: true,
         validate:{
             validator: value => ['1','2','3','4','5','6','7','8','9','10'].includes(value),
             message: 'Invalid Credits'

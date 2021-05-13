@@ -1,12 +1,11 @@
 const Task = require('../../models/projectTaskModel');
 module.exports = async(req, res)=>{
-    const {taskDesc, priority, createdDate, status, projectRef}=req.body;
+    const {taskDesc, priority, status, projectRef}=req.body;
     try {
         Task.create({
             taskDesc,
             priority,
             status,
-            createdDate,
             projectRef   
         },async(er,dt)=>{
             if(er) return res.status(400).send({type:'error',message: er.message});
