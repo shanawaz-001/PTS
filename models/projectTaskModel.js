@@ -33,6 +33,15 @@ const projectTaskSchema = new mongoose.Schema({
     doc:{
         type: Date
     },
+    credits:{
+        type: Number,
+        required: true,
+        validate:{
+            validator: value => ['1','2','3','4','5','6','7','8','9','10'].includes(value),
+            message: 'Invalid Credits'
+        },
+        default: '1'
+    },
     projectRef:{
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Project',
