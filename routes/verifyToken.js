@@ -135,18 +135,18 @@ module.exports.TL = async (req,res,next)=>{
         const decode = jwt.decode(token);
         const user = await User.findOne({employeeId: decode.employeeId},async(err,data)=>{
             if(err) res.status(401).send({ type:'error',message: 'something went wrong, try again'});
-            if(user){
-                const isTL = await Team.find({teamLeader: decode.id});
-            
-                if(isTL){
-                    next();
-                }
-                    
-                else{
-                    res.status(401).send({type:'error',message: 'Access Denied'})
-                }
-            }
         });
+        if(user){
+            const isTL = await Team.find({teamLeader: decode.id});
+        
+            if(isTL){
+                next();
+            }
+                
+            else{
+                res.status(401).send({type:'error',message: 'Access Denied'})
+            }
+        }
         if(!user) res.status(404).send({type: 'error', message: 'User not found'});     
     } catch (error) {
         console.log(error);

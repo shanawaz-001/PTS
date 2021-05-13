@@ -3,6 +3,10 @@ const router = require("express").Router();
 router.get('/emp', require('../routes/readRoutes').empDev);
 //View Projects
 router.get('/project', require('../routes/readRoutes').projects);
+//View Tasks
+router.get('/project/tasks/:projectRef',require('../routes/readRoutes').tasks);
+//View Teams
+router.get('/project/teams/:projectRef',require('../routes/readRoutes').teams);
 //Add project
 router.post('/project/add', require('../controller/bdm/add.project.controller'));
 //Update Project

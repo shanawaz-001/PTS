@@ -27,8 +27,18 @@ module.exports.projects = async(req, res) =>{
     .then(data => res.send(data))
     .catch(error => console.error(error))
 }
-
-
+//All Tasks---------------------------------------------
+module.exports.tasks = async(req, res)=>{
+    await Task.find({projectRef: req.params.projectRef})
+    .then(data => res.send(data))
+    .catch(error => console.error(error))
+}
+//All Teams---------------------------------------------
+module.exports.teams = async(req, res)=>{
+    await Task.find({projectRef: req.params.projectRef})
+    .then(data => res.send(data))
+    .catch(error => console.error(error))
+}
 //All developers----------------------------------------
 module.exports.empDev = async(req, res)=>{
     await Emp.find({status: process.env.ACTIVE,designation: process.env.DEV}).sort('employeeId')
