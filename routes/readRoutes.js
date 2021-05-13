@@ -35,12 +35,7 @@ module.exports.projects = async(req, res) =>{
 
 //Project Tasks-----------------------------------------------
 module.exports.projectTasks = async(req, res)=>{
-    const val = {
-        LOW: 3,
-        NORMAL: 2,
-        HIGH: 1
-      }
-    await Task.find({projectRef: req.params.projectRef}).sort((a, b) => val[a.priority] - val[b.priority])
+    await Task.find({projectRef: req.params.projectRef}).sort('priority')
     .then(data => res.send(data))
     .catch(error => console.error(error))
 }
