@@ -41,7 +41,7 @@ module.exports.projectTasks = async(req, res)=>{
 }
 //Project Teams-----------------------------------------------
 module.exports.projectTeams = async(req, res)=>{
-    await Team.find({projectRef: req.params.projectRef}).populate('teamMembers.devRef')
+    await Team.find({projectRef: req.params.projectRef}).populate('teamMembers.devRef teamLeader')
     .then(data => res.send(data))
     .catch(error => console.error(error))
 }
