@@ -18,7 +18,7 @@ module.exports = async(req, res) =>{
                 else{
                     const team = await Team.findOne({teamMembers:{$elemMatch:{devRef : req.body.devRef}}})
                     .exec((e,d)=>{
-                        if(e) console.log(e.message)
+                        if(e) res.status(400).send({tyep: 'error', message: e.message})
                         else{
                             let teammembers = d.teamMembers
                             teammembers = teammembers.map(dev=>({
