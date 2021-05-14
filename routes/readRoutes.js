@@ -67,13 +67,13 @@ module.exports.projectsTL = async(req, res) =>{
 module.exports.assignedTeamMem = async(req, res) =>{
     try {
         const task = await Task.find({projectRef: req.params.projectRef},async(er,dt)=>{
-            if(er) res.status(400).send({type: 'warn', message: 'No Tasks'});
+            if(er) res.status(400).send({type: 'error', message: er.message});
             else{
-                await assignedTask.find({taskRef:{$in: dt}}).populate('devRef','name')
+                await assignedTask.find({taskRef:{$in: dt}}).populate('devRef')
                 .exec((e,d)=>{
-                 if(e) res.status(400).send({type: 'warn', message: 'No Tasks'});
+                 if(e) res.status(400).send({type: 'error', message: e.message});
                  else{
-                     console.log(d)
+                    res.status(200).send(d)
                  }
              })
             }
@@ -88,23 +88,17 @@ module.exports.assignedTeamMem = async(req, res) =>{
 //get team members task unassigned TL -----------------------------------------
 module.exports.unassignedTeamMem = async(req, res) =>{
     try {
-      team =  await Team.find({projectRef: req.params.projectRef}).populate('teamMembers','_id');
-      if(!team) res.status(500).send({type: 'warn', message: 'No Tasks'});
-      else{
-          var teamMem
-         team.forEach(element => {
-             teamMem = element.teamMembers;
-         });
-         console.log(teamMem)
-     }
-     const astask = await assignedTask.find({devRef:{$in:teamMem}}).populate('devRef','name')
-     .exec((e,d)=>{
-         if(e) res.status(400).send({type: 'warn', message: 'No uTasks'});
-         else{
-             console.log(d)
-         }
-     })
-     
+        await Team.find({projectRef: req.params.projectRef}).populate('teamMembers.devRef').exec(async(e,d)=>{
+            if(e) res.status(400).send({type: 'error', message: e.message});
+            else{
+                var teamMem
+                d.forEach(element => {
+                    teamMem = element.teamMembers;
+                });
+                let Unassign = teamMem.filter(member => member.isAssigned===false)
+                res.status(200).send(Unassign);
+            }
+        });
  } catch (error) {
      console.error(error);
      res.status(500).send({type: 'error', message: 'Error while connecting to the server!'});
