@@ -66,7 +66,7 @@ module.exports.projectsTL = async(req, res) =>{
 //assigned Team Members of TL------------------------------------
 module.exports.assignedTeamMem = async(req, res) =>{
     try {
-        const task = await Task.find({projectRef: req.params.projectRef},async(er,dt)=>{
+        await Task.find({projectRef: req.params.projectRef},async(er,dt)=>{
             if(er) res.status(400).send({type: 'error', message: er.message});
             else{
                 await assignedTask.find({taskRef:{$in: dt}}).populate('devRef')
