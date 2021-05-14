@@ -104,8 +104,35 @@ module.exports.unassignedTeamMem = async(req, res) =>{
      res.status(500).send({type: 'error', message: 'Error while connecting to the server!'});
     }
  }
+//get assigned task of Team Members-------------------------------------
+module.exports.teamMemTask = async(req, res) =>{
+    try {
+        await Team.find({projectRef: req.params.projectRef}).exec(async(er,d)=>{
+            if(er) res.status(400).send({type: 'error', message: er.message});
+            else{
+                var teamMem
+                d.forEach(element => {
+                    teamMem = element.teamMembers;
+                });
+                var team = teamMem.filter(member => member.isAssigned)
 
- //get confirmation of Dev----------------------------------------------
+                    await assignedTask.find({},{devRef:"team.devRef"}).populate('taskRef')
+                    .exec(async(e,d)=>{
+                     if(e) res.status(400).send({type: 'error', message: e.message});
+                     else{
+                         res.status(200).send(d)
+                     }
+                 })
+                
+                
+            }
+        });
+ } catch (error) {
+     console.error(error);
+     res.status(500).send({type: 'error', message: 'Error while connecting to the server!'});
+    }
+ }
+//get confirmation of Dev----------------------------------------------
  module.exports.confirmationDev = async(req,res)=>{
     const token = req.header('authorization');
     try {

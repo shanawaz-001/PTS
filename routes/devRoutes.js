@@ -55,6 +55,8 @@ router.get('/tl/project/team/:projectRef',verify.TL, require('../routes/readRout
 router.get('/tl/project/team/assigned/:projectRef',verify.TL, require('../routes/readRoutes').assignedTeamMem);
 //get team members task unassigned
 router.get('/tl/project/team/unassigned/:projectRef',verify.TL, require('../routes/readRoutes').unassignedTeamMem);
+//get tasks by team members
+router.get('/tl/project/team/tasks/:projectRef',verify.TL, require('../routes/readRoutes').teamMemTask);
 //assign task to team member
 router.post('/tl/project/team/assignTask',verify.TL,require('../controller/tl/assign.task.controller'));
 //Unassign task to team member
