@@ -61,6 +61,8 @@ router.get('/tl/project/team/tasks/:projectRef',verify.TL, require('../routes/re
 router.post('/tl/project/team/assignTask',verify.TL,require('../controller/tl/assign.task.controller'));
 //Unassign task to team member
 router.post('/tl/project/team/unassignTask',verify.TL,require('../controller/tl/unassign.task.controller'));
+//Update task status
+router.post('/tl/project/task/update',verify.TL,require('../controller/tl/update.task.controller'));
 
 //update % of team work completion
 
