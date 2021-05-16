@@ -7,6 +7,10 @@ const todoSchema = new mongoose.Schema({
         unique: [true, 'Already exists'],
         required: true
     },
+    id:{
+        type:String,
+        required:true
+    },
     todos:[
         {
             note:{
@@ -16,11 +20,6 @@ const todoSchema = new mongoose.Schema({
             isDone:{
                 type:Boolean,
                 default: false
-            },
-            createdDate:{
-                type:Date,
-                required:true,
-                default: Date.now
             }
         }
     ]
