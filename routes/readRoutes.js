@@ -155,8 +155,8 @@ module.exports.teamMemTask = async(req, res) =>{
     const token = req.header('authorization');
     try {
         const decode = jwt.decode(token);
-        const team = await Team.find({"teamMembers.devRef": decode.id})
-        .populate({path : 'projectRef teamLeader', populate : {path : 'managerId'}})
+        await Team.find({"teamMembers.devRef": decode.id})
+        .populate({path : 'projectRef teamLeader teamMembers.devRef', populate : {path : 'managerId'}})
         .exec((er,dt)=>{
             if(er) return res.status(400).send({type:'error', message:er.message});
             if(dt.length>0) return res.send(dt)
@@ -174,7 +174,9 @@ module.exports.tasksDev = async(req,res)=>{
     const token = req.header('authorization');
     try {
         const decode = jwt.decode(token);
-        const task = await Task.find({devRef: decode.id}).populate('taskRef').exec(async(e,d)=>{
+        await assignedTask.find({devRef: decode.id})
+        .populate({path : 'taskRef ', populate : {path : 'projectRef'}})
+        .exec(async(e,d)=>{
             if(e) return res.status(401).send({type: 'error', message: e.message})
             if(d.length>0) return res.send(d)
             if(d.length===0) return res.send({message: 'No Tasks assigned'});

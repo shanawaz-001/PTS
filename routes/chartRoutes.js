@@ -45,9 +45,24 @@ module.exports.bdmEmp = async(req, res)=>{
 module.exports.projects = async(req, res)=>{
     try {
        const projects =  await Project.find().count();
+       let Pmcount;
+       const Pm = await Project.find().exec(async(er,dt)=>{
+           if(er) return res.status(400).send({type:'error',message: er.message})
+           const managers = dt.map(item => item.managerId);
+           if(dt.length>0){
+               await Employee.find({_id: {$in: managers}})
+               .exec(async(e,d)=>{
+                   if(e) return res.status(400).send({type:'error',message: e.message})
+                   if(d.length>0) {
+                       console.log( typeof d)
+                   }
+               });
+           }
+       })
        const projectCompleted = await Project.find({isCompleted: true}).count();
        const projectInComplete = await Project.find({isCompleted: false}).count();
        res.status(200).send([
+           {label: 'Project Managers', data: Pmcount},
            { label:'Projects',data: projects},
            { label:'Completed',data: projectCompleted},
            { label:'InComplete',data: projectInComplete},
