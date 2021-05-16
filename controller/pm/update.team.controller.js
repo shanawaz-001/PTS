@@ -16,7 +16,6 @@ const Team = require('../../models/projectTeamModel');
 
 module.exports = async(req,res)=>{
     const { projectRef, teamLeader, teamMembers} = req.body;
-    console.log(teamMembers);
     try {
         await Team.findOneAndUpdate({projectRef: projectRef},{
             teamLeader,
