@@ -15,4 +15,5 @@ router.post('/emp/active', require('../controller/hr/active.emp.controller'));
 router.get('/projects',require('../routes/readRoutes').projects);
 //
 router.get('/chart/emp',require('../routes/chartRoutes').emp);
+router.get('/chart/projects',require('../routes/chartRoutes').projects);
 module.exports = router;

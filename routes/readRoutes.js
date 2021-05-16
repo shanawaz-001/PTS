@@ -162,7 +162,7 @@ module.exports.teamMemTask = async(req, res) =>{
                 return res.status(200).send(data);
             });
         }
-        if(!team) res.send({message: 'No Projects assigned'});
+        if(!team) res.send('');
        
     } catch (error) {
         console.log(error);

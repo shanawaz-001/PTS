@@ -7,7 +7,7 @@ const Task = require('../models/projectTaskModel');
 const assignedTask = require('../models/assignTaskModel');
 const Team = require('../models/projectTeamModel');
 
-//all employees count---------------------------------------
+// employees---------------------------------------
 module.exports.emp = async(req, res)=>{
     try {
        const emp =  await Employee.find().count();
@@ -16,14 +16,35 @@ module.exports.emp = async(req, res)=>{
        const empBdm = await Employee.find({designation: 'BDM'}).count();
        const empActive = await Employee.find({status:'ACTIVE'}).count();
        const empInactive = await Employee.find({status:'IN-ACTIVE'}).count();
-       res.send({
-           Employees: emp,
-           EmployeesActive: empActive,
-           EmployeesInactive: empInactive,
-           EmployeesHr: empHr,
-           EmployeesBdm: empBdm,
-           EmployeesDev: empDev
-       })
+       res.status(200).send([
+           { label:'Employees',data:emp},
+           { label:'EmployeesActive',data:empActive},
+           { label:'EmployeesInactive',data:empInactive},
+           { label:'EmployeesHr',data:empHr},
+           { label:'EmployeesBdm',data:empBdm},
+           { label:'EmployeesDev',data:empDev},
+       ])
+    } catch (error) {
+        res.status(400).send({type:'error', message:`can't connect to the server`});
+    }
+}
+//Projects------------------------------------
+module.exports.projects = async(req, res)=>{
+    try {
+       const projects =  await Project.find().count();
+       const projectCompleted = await Project.find({isCompleted: true}).count();
+    //    const empHr = await Employee.find({designation: 'HR'}).count();
+    //    const empBdm = await Employee.find({designation: 'BDM'}).count();
+    //    const empActive = await Employee.find({status:'ACTIVE'}).count();
+    //    const empInactive = await Employee.find({status:'IN-ACTIVE'}).count();
+       res.status(200).send([
+           { label:'Projects',data: projects},
+           { label:'ProjectCompleted',data: projectCompleted},
+        //    { label:'EmployeesInactive',data:empInactive},
+        //    { label:'EmployeesHr',data:empHr},
+        //    { label:'EmployeesBdm',data:empBdm},
+        //    { label:'EmployeesDev',data:empDev},
+       ])
     } catch (error) {
         res.status(400).send({type:'error', message:`can't connect to the server`});
     }
