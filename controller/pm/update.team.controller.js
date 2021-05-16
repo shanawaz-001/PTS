@@ -17,7 +17,7 @@ const Team = require('../../models/projectTeamModel');
 module.exports = async(req,res)=>{
     const { projectRef, teamLeader, teamMembers} = req.body;
     try {
-        Team.findOneAndUpdate({projectRef: projectRef},{
+        await Team.findOneAndUpdate({projectRef: projectRef},{
             teamLeader,
             $addToSet: { teamMembers: { $each: [ {devRef: teamMembers.devRef}  ] } }
         },async(err,dt)=>{
