@@ -33,17 +33,26 @@ module.exports.projects = async(req, res)=>{
     try {
        const projects =  await Project.find().count();
        const projectCompleted = await Project.find({isCompleted: true}).count();
-    //    const empHr = await Employee.find({designation: 'HR'}).count();
-    //    const empBdm = await Employee.find({designation: 'BDM'}).count();
-    //    const empActive = await Employee.find({status:'ACTIVE'}).count();
-    //    const empInactive = await Employee.find({status:'IN-ACTIVE'}).count();
+       const projectInComplete = await Project.find({isCompleted: false}).count();
        res.status(200).send([
            { label:'Projects',data: projects},
            { label:'ProjectCompleted',data: projectCompleted},
-        //    { label:'EmployeesInactive',data:empInactive},
-        //    { label:'EmployeesHr',data:empHr},
-        //    { label:'EmployeesBdm',data:empBdm},
-        //    { label:'EmployeesDev',data:empDev},
+           { label:'ProjectInComplete',data: projectInComplete},
+       ])
+    } catch (error) {
+        res.status(400).send({type:'error', message:`can't connect to the server`});
+    }
+}
+//tasks---------------------------------------
+module.exports.tasks = async(req, res)=>{
+    try {
+       const tasks =  await Task.find().count();
+       const projectCompleted = await Project.find({isCompleted: true}).count();
+       const projectInComplete = await Project.find({isCompleted: false}).count();
+       res.status(200).send([
+           { label:'tasks',data: tasks},
+           { label:'ProjectCompleted',data: projectCompleted},
+           { label:'ProjectInComplete',data: projectInComplete},
        ])
     } catch (error) {
         res.status(400).send({type:'error', message:`can't connect to the server`});
