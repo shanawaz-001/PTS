@@ -13,3 +13,11 @@ module.exports = async(req,res)=>{
         res.status(500).send({type: 'error', message: 'Error while connecting to the server!'});
     }
 }
+ //  team =  await Team.find({projectRef: req.body.projectRef}).populate('teamMembers','name');
+    //  if(!team) res.status(500).send({type: 'warn', message: 'No Tasks'});
+    //  else{
+    //      var teamMem
+    //     team.forEach(element => {
+    //         teamMem = element.teamMembers;
+    //     });
+    // }
