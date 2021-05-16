@@ -155,7 +155,7 @@ module.exports.teamMemTask = async(req, res) =>{
     const token = req.header('authorization');
     try {
         const decode = jwt.decode(token);
-        const team = await Team.findOne({"teamMembers.devRef": decode.id});
+        const team = await Team.find({"teamMembers.devRef": decode.id});
         if(team){
             await Project.findById(team.projectRef).populate("managerId","name").exec((err,data)=>{
                 if(err) return res.status(400).send({type:'error', message:err.message});
