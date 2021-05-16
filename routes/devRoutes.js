@@ -64,8 +64,6 @@ router.post('/tl/project/team/unassignTask',verify.TL,require('../controller/tl/
 //Update task status
 router.post('/tl/project/task/update',verify.TL,require('../controller/tl/update.task.controller'));
 //todos-
-router.post('/tl/todo/add',verify.TL, require('../routes/todoRoutes').todoAdd);
-router.get('/tl/todos',verify.TL, require('../routes/todoRoutes').todos);
 //update % of team work completion
 
 
