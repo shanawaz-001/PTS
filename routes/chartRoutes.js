@@ -18,11 +18,11 @@ module.exports.emp = async(req, res)=>{
        const empInactive = await Employee.find({status:'IN-ACTIVE'}).count();
        res.status(200).send([
            { label:'Employees',data:emp},
-           { label:'EmployeesActive',data:empActive},
-           { label:'EmployeesInactive',data:empInactive},
-           { label:'EmployeesHr',data:empHr},
-           { label:'EmployeesBdm',data:empBdm},
-           { label:'EmployeesDev',data:empDev},
+           { label:'Active',data:empActive},
+           { label:'Inactive',data:empInactive},
+           { label:'Human Resource Manager',data:empHr},
+           { label:'Business Development Manager',data:empBdm},
+           { label:'Developer',data:empDev},
        ])
     } catch (error) {
         res.status(400).send({type:'error', message:`can't connect to the server`});
@@ -36,8 +36,8 @@ module.exports.projects = async(req, res)=>{
        const projectInComplete = await Project.find({isCompleted: false}).count();
        res.status(200).send([
            { label:'Projects',data: projects},
-           { label:'ProjectCompleted',data: projectCompleted},
-           { label:'ProjectInComplete',data: projectInComplete},
+           { label:'Completed',data: projectCompleted},
+           { label:'InComplete',data: projectInComplete},
        ])
     } catch (error) {
         res.status(400).send({type:'error', message:`can't connect to the server`});
