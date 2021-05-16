@@ -156,7 +156,7 @@ module.exports.teamMemTask = async(req, res) =>{
     try {
         const decode = jwt.decode(token);
         const team = await Team.find({"teamMembers.devRef": decode.id})
-        .populate({path : 'projectRef', populate : {path : 'managerId'}})
+        .populate({path : 'projectRef teamLeader', populate : {path : 'managerId'}})
         .exec((er,dt)=>{
             if(er) return res.status(400).send({type:'error', message:er.message});
             if(dt.length>0) return res.send(dt)
