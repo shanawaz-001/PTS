@@ -5,7 +5,7 @@ module.exports = async(req,res)=>{
     try {
         Team.findOneAndUpdate({projectRef: projectRef},{
             teamLeader,
-            $addToSet: { teamMembers: { $each: [ devRef = teamMembers.devRef  ] } }
+            $addToSet: { teamMembers: { $each: [ {devRef: teamMembers.devRef}  ] } }
         },async(err,dt)=>{
             if(err) return res.status(400).send({type:'error', message: err.message});
             return res.status(200).send({type:'success',message:'Team is added to the project'});
