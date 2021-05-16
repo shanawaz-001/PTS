@@ -13,10 +13,13 @@ router.post('/project/add', require('../controller/bdm/add.project.controller'))
 router.post('/project/update', require('../controller/bdm/update.project.controller'));
 // //Delete Project
 router.post('/project/remove', require('../controller/bdm/remove.project.controller'));
-// //Set Project Manager
-// router.post('/bdm/project/add', verify.BDM, require('../controller/bdm/add.project.controller'))
-//Track Project Tasks
 
+
+//Track Project Tasks
+router.get('/chart/emp',require('../routes/chartRoutes').bdmEmp);
+router.get('/chart/projects',require('../routes/chartRoutes').projects);
+router.get('/chart/tasks/priority',require('../routes/chartRoutes').taskPriority);
+router.get('/chart/tasks/status',require('../routes/chartRoutes').taskStatus);
 
 module.exports = router;
 
