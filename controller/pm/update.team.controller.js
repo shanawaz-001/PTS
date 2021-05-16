@@ -16,10 +16,11 @@ const Team = require('../../models/projectTeamModel');
 
 module.exports = async(req,res)=>{
     const { projectRef, teamLeader, teamMembers} = req.body;
+    console.log(teamMembers);
     try {
         await Team.findOneAndUpdate({projectRef: projectRef},{
             teamLeader,
-            $addToSet: { teamMembers: teamMembers }
+            $addToSet: { teamMembers: teamMembers.devRef }
         },async(err,dt)=>{
             if(err) return res.status(400).send({type:'error', message: err.message});
             return res.status(200).send({type:'success',message:'Team is added to the project'});
