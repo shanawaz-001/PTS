@@ -7,12 +7,13 @@ const todoSchema = new mongoose.Schema({
         unique: [true, 'Already exists'],
         required: true
     },
-    id:{
-        type:String,
-        required:true
-    },
+    
     todos:[
         {
+            id:{
+                type:String,
+                required:true
+            },
             note:{
                 type: String,
                 required:true
