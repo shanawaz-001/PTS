@@ -4,7 +4,7 @@ const Team = require('../../models/projectTeamModel');
 module.exports = async(req, res) =>{
     try {
         const {taskRef} = req.body;
-        await assignTask.findOneAndDelete(taskRef,
+        await assignTask.findOneAndDelete({taskRef: taskRef},
             async (err, data)=>{
                 if(err) return res.status(400).send({type:'error', message: err.message});
                 else{
