@@ -59,8 +59,8 @@ module.exports.projectsPM = async(req, res) =>{
 module.exports.projectsTL = async(req, res) =>{
     const token = req.header('authorization');
     const decode = jwt.decode(token);
-    await Team.find({teamLeader: decode.id}).populate('projectRef teamMembers.devRef').sort('projectTitle')
-    .then(data => res.send(data))
+    await Team.find({teamLeader: decode.id}).populate('projectRef.managerId teamMembers.devRef').sort('projectTitle')
+    .then(data => {res.send(data)})
     .catch(error => console.error(error))
 }
 //assigned Team Members of TL------------------------------------
