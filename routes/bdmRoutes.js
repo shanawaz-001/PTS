@@ -16,7 +16,8 @@ router.post('/project/remove', require('../controller/bdm/remove.project.control
 
 
 //Track Project Tasks
-router.get('/chart/emp',require('../routes/chartRoutes').bdmEmp);
+router.get('/chart/emp',require('../routes/chartRoutes').emp);
+router.get('/chart/emp/status',require('../routes/chartRoutes').empStatus);
 router.get('/chart/projects',require('../routes/chartRoutes').projects);
 router.get('/chart/tasks/priority',require('../routes/chartRoutes').taskPriority);
 router.get('/chart/tasks/status',require('../routes/chartRoutes').taskStatus);

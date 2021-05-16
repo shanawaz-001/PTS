@@ -14,29 +14,32 @@ module.exports.emp = async(req, res)=>{
        const empDev = await Employee.find({designation:process.env.DEV}).count();
        const empHr = await Employee.find({designation: process.env.HR}).count();
        const empBdm = await Employee.find({designation: process.env.BDM}).count();
-       const empActive = await Employee.find({status:process.env.ACTIVE}).count();
-       const empInactive = await Employee.find({status:process.env.INACTIVE}).count();
+       const Pm = await Project.find({managerId: {$ne: null}}).count();
+       const Tl = await Team.find({teamLeader: {$ne: null}}).count();
+       const Dev = empDev-Pm-Tl;
        res.status(200).send([
-           { label:'Employees',data:emp},
-           { label:'Active',data:empActive},
-           { label:'Inactive',data:empInactive},
+           { label:'Total',data:emp},
+           {label: 'Project Managers', data: Pm},
+           {label: 'Team Leaders', data: Tl},
            { label:'Human Resource Manager',data:empHr},
            { label:'Business Development Manager',data:empBdm},
-           { label:'Developer',data:empDev},
+           { label:'Developer',data:Dev},
        ])
     } catch (error) {
         res.status(400).send({type:'error', message:`can't connect to the server`});
     }
 }
 //For BDM-----------------------------------------------------------------------------------------------------
-module.exports.bdmEmp = async(req, res)=>{
+module.exports.empStatus = async(req, res)=>{
     try {
-       const empDev = await Employee.find({status: process.env.ACTIVE,designation: process.env.DEV}).count();
-       const empActive = await Employee.find({status: process.env.ACTIVE}).count();
-       res.status(200).send([
-           { label:'Employees',data:empActive},
-           { label:'Developer',data:empDev},
-       ])
+       const emp =  await Employee.find().count();
+        const empActive = await Employee.find({status: process.env.ACTIVE}).count();
+        const empInactive = await Employee.find({status: process.env.INACTIVE}).count();
+        res.status(200).send([
+            { label:'Total',data:emp},
+            { label:'Active',data:empActive},
+            { label:'Inactive',data:empInactive},
+        ])
     } catch (error) {
         res.status(400).send({type:'error', message:`can't connect to the server`});
     }
@@ -45,27 +48,12 @@ module.exports.bdmEmp = async(req, res)=>{
 module.exports.projects = async(req, res)=>{
     try {
        const projects =  await Project.find().count();
-       let Pmcount;
-       const Pm = await Project.find().exec(async(er,dt)=>{
-           if(er) return res.status(400).send({type:'error',message: er.message})
-           const managers = dt.map(item => item.managerId);
-           if(dt.length>0){
-               await Employee.find({_id: {$in: managers}})
-               .exec(async(e,d)=>{
-                   if(e) return res.status(400).send({type:'error',message: e.message})
-                   if(d.length>0) {
-                       console.log( typeof d)
-                   }
-               });
-           }
-       })
        const projectCompleted = await Project.find({isCompleted: true}).count();
        const projectInComplete = await Project.find({isCompleted: false}).count();
        res.status(200).send([
-           {label: 'Project Managers', data: Pmcount},
-           { label:'Projects',data: projects},
+           { label:'Total',data: projects},
            { label:'Completed',data: projectCompleted},
-           { label:'InComplete',data: projectInComplete},
+           { label:'InCompleted',data: projectInComplete},
        ])
     } catch (error) {
         res.status(400).send({type:'error', message:`can't connect to the server`});
@@ -79,7 +67,7 @@ module.exports.taskPriority = async(req, res)=>{
        const taskPnrml = await Task.find({priority: 'NORMAL'}).count();
        const taskPhigh = await Task.find({priority: 'HIGH'}).count();
        res.status(200).send([
-           { label:'tasks',data: tasks},
+           { label:'Total',data: tasks},
            { label:'Low',data: taskPlow},
            { label:'Normal',data: taskPnrml},
            { label:'High',data: taskPhigh},
@@ -96,7 +84,7 @@ module.exports.taskStatus = async(req, res)=>{
        const taskSOnhold = await Task.find({status: 'ON_HOLD'}).count();
        const taskSCmptd = await Task.find({status: 'COMPLETED'}).count();
        res.status(200).send([
-           { label:'tasks',data: tasks},
+           { label:'Total',data: tasks},
            { label:'Not Started',data: taskSntstarted},
            { label:'Active',data: taskSActive},
            { label:'On-hold',data: taskSOnhold},
