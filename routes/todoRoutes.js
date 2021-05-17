@@ -3,9 +3,8 @@ const Todo = require('../models/todoModel');
 
 module.exports.todos = async (req, res) =>{
     try {
-        const token = req.header('authorization');
-        const decode = jwt.decode(token);
-        await Todo.findOne({employeeRef: decode.id}).then(data => res.send(data)).catch(error => res.send(error));
+        
+        await Todo.findOne({employeeRef: req.body._id}).then(data => res.send(data)).catch(error => res.send(error));
     } catch (error) {
         console.error(error);
         res.status(500).send({type: 'error', message: 'Error while connecting to the server!'});
@@ -14,19 +13,17 @@ module.exports.todos = async (req, res) =>{
 
 module.exports.todoAdd = async(req, res)=>{
     try {
-        const token = req.header('authorization');
-        const decode = jwt.decode(token);
-        const todo = await Todo.find({ employeeRef: decode.id});
+        const {_id, todos} = req.body;
+        const todo = await Todo.find({ employeeRef: _id});
         if(todo.length===0){
             Todo.create({
-                id: req.body.id,
-                employeeRef: decode.id,
-                todos: req.body.todos
+                employeeRef: _id,
+                todos: todos
             }).then(data => res.send(data)).catch(error => res.send(error))
         }
         if(todo.length>0){
-            Todo.findOneAndUpdate({ employeeRef: decode.id},{
-                todos: req.body.todos
+            Todo.findOneAndUpdate({ employeeRef: _id},{
+                todos: todos
             },{new:true}).then(data => res.send(data)).catch(error => res.send(error));
         }
         
