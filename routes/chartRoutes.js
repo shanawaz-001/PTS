@@ -94,3 +94,50 @@ module.exports.taskStatus = async(req, res)=>{
         res.status(400).send({type:'error', message:`can't connect to the server`});
     }
 }
+
+module.exports.devTask = async(req, res)=>{
+    try {
+        const token = req.header('authorization');
+        const decode = jwt.decode(token);
+        const total = await assignedTask.find({devRef: decode.id}).count();
+        const active = await assignedTask.find({devRef: decode.id}).populate('taskRef', null,{status: 'NOT_STARTED'}).count();
+        const not_started = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{taskRef: {path: 'taskRef'},status: 'NOT_STARTED'}}).count();
+        const on_hold = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'ON_HOLD'}}).count();
+        const completed = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'COMPLETED'}}).count();
+console.log(completed)
+        res.status(200).send([
+            { label:'Total',data: total},
+            { label:'Not Started',data: not_started},
+            { label:'Active',data: active},
+            { label:'On-hold',data: on_hold},
+            { label:'Completed',data: completed},
+        ])
+    } catch (error) {
+        res.status(400).send({type:'error', message:`can't connect to the server`});
+    }
+}
+
+module.exports.propercent = async(req, res)=>{
+    try {
+        const token = req.header('authorization');
+        const decode = jwt.decode(token);
+        const total = await Project.find({managerId: decode.id}).count();
+        const Completed = await Project.find({managerId: decode.id, isCompleted: true}).count();
+        const Complete = await Project.find({managerId: decode.id,isCompleted: false}).count();
+        const active = await assignedTask.find({devRef: decode.id}).populate('taskRef', null,{status: 'NOT_STARTED'}).count();
+        const not_started = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{taskRef: {path: 'taskRef'},status: 'NOT_STARTED'}}).count();
+        const on_hold = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'ON_HOLD'}}).count();
+        const completed = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'COMPLETED'}}).count();
+console.log(completed)
+        res.status(200).send([
+            { label:'Total',data: total},
+            { label:'Not Started',data: not_started},
+            { label:'Active',data: active},
+            { label:'On-hold',data: on_hold},
+            { label:'Completed',data: completed},
+        ])
+    } catch (error) {
+        res.status(400).send({type:'error', message:`can't connect to the server`});
+    }
+}
+
