@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const router = require("express").Router();
 const Todo = require('../models/todoModel');
 
 module.exports.todos = async (req, res) =>{

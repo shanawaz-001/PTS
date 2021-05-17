@@ -14,6 +14,11 @@ router.post('/project/update', require('../controller/bdm/update.project.control
 // //Delete Project
 router.post('/project/remove', require('../controller/bdm/remove.project.controller'));
 
+router.get('/todos', require('../routes/todoRoutes').todos);
+router.post('/todo/update', require('../routes/todoRoutes').todoAdd);
+
+
+
 
 //Track Project Tasks
 router.get('/chart/emp',require('../routes/chartRoutes').emp);
