@@ -4,7 +4,7 @@ const Todo = require('../models/todoModel');
 module.exports.todos = async (req, res) =>{
     try {
         
-        await Todo.findOne({employeeRef: req.body._id}).then(data => res.send(data)).catch(error => res.send(error));
+        await Todo.findOne({employeeRef: req.params._id}).then(data => res.send(data)).catch(error => res.send(error));
     } catch (error) {
         console.error(error);
         res.status(500).send({type: 'error', message: 'Error while connecting to the server!'});

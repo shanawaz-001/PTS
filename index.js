@@ -36,7 +36,7 @@ app.use('/api/hr',verification.HR,require('./routes/hrRoutes'));
 app.use('/api/bdm',verification.BDM,require('./routes/bdmRoutes'));
 app.use('/api',verification.DEV,require('./routes/devRoutes'));
 app.use('/api/todo/update', require('./routes/todoRoutes').todoAdd);
-app.use('/api/todos', require('./routes/todoRoutes').todos);
+app.use('/api/todos/:_id', require('./routes/todoRoutes').todos);
 // app.use('/api/bdm',require('./routes/bdmRoutes'));
 
 app.listen(PORT, ()=> console.log(`Server started on the port: ${PORT}`));
