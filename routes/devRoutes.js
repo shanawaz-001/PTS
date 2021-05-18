@@ -71,6 +71,12 @@ router.post('/tl/project/team/assignTask',verify.TL,require('../controller/tl/as
 router.post('/tl/project/team/unassignTask',verify.TL,require('../controller/tl/unassign.task.controller'));
 //Update task status
 router.post('/tl/project/task/update',verify.TL,require('../controller/tl/update.task.controller'));
+
+
+//charts--------------------
+router.get('/tl/chart/projects/percent',require('../routes/chartRoutes').projectPercentTL);
+
+
 //todos-
 //update % of team work completion
 

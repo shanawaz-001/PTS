@@ -20,4 +20,5 @@ router.get('/chart/projects',require('../routes/chartRoutes').projects);
 router.get('/chart/tasks/priority',require('../routes/chartRoutes').taskPriority);
 router.get('/chart/tasks/status',require('../routes/chartRoutes').taskStatus);
 router.get('/chart/tasks/percent/:id',require('../routes/chartRoutes').taskPercent);
+router.get('/chart/projects/percent',require('../routes/chartRoutes').projectPercent);
 module.exports = router;
