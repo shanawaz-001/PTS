@@ -120,7 +120,7 @@ module.exports.projectPercent = async(req, res)=>{
     try {
         const projects = await Project.find().select('_id projectTitle');
         
-        const test = await Promise.all(projects.map(async(project)=>{
+        const data = await Promise.all(projects.map(async(project)=>{
             
             const task = await Task.find({projectRef: project._id})
             const taskCompleted = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
@@ -138,7 +138,7 @@ module.exports.projectPercent = async(req, res)=>{
 
             })
         }))
-        res.send(test)
+        res.send(data)
     } catch (error) {
         console.error(error)
         res.status(400).send({type:'error', message: error.message});
@@ -151,7 +151,7 @@ module.exports.projectPercentPM = async(req, res)=>{
         const token = req.header('authorization');
         const decode = jwt.decode(token);
         const projects = await Project.find({managerId: decode.id}).select('_id projectTitle');
-        const test = await Promise.all(projects.map(async(project)=>{
+        const data = await Promise.all(projects.map(async(project)=>{
         const task = await Task.find({projectRef: project._id})
         const taskCompleted = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
 
@@ -168,7 +168,7 @@ module.exports.projectPercentPM = async(req, res)=>{
 
         })
     }))
-    res.send(test)
+    res.send(data)
     } catch (error) {
         console.error(error)
         res.status(400).send({type:'error', message: error.message});
@@ -177,37 +177,32 @@ module.exports.projectPercentPM = async(req, res)=>{
 
 
 // FOR TEAMLEADER----------------------------------------------------------------------------
-// await Team.find({teamLeader: decode.id})
-//     .populate({path : 'projectRef teamMembers.devRef', populate : {path : 'managerId'}})
-//     .sort('projectTitle')
-//     .then(data => {res.send(data)})
-//     .catch(error => console.error(error))
+
 module.exports.projectPercentTL = async(req, res)=>{
     try {
         const token = req.header('authorization');
         const decode = jwt.decode(token);
-        const team = await Team.find({teamLeader: decode.id}).select('projectRef')
-        console.log(team)
-        const projects = await Project.findById({_id:{$in: team}}).select('_id projectTitle');
-        console.log(projects)
-    //     const test = await Promise.all(projects.map(async(project)=>{
-    //     const task = await Task.find({projectRef: project._id})
-    //     const taskCompleted = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
+        const team = await Team.find({teamLeader: decode.id})
+        .populate('projectRef','projectTitle')
+        .select('projectRef projectTitle')
+        const data = await Promise.all(team.map(async(project)=>{
+        const task = await Task.find({projectRef: project.projectRef})
+        const taskCompleted = await Task.find({projectRef: project.projectRef._id,status: 'COMPLETED'},).select('credits');
 
-    //     let totalTasks = task.map(item => item.credits);
+        let totalTasks = task.map(item => item.credits);
 
-    //     var sumCredits = totalTasks.length === 0 ? 0 : totalTasks.reduce((a, b) => a+b);
-    //     let percent = taskCompleted.map(item => (item.credits/sumCredits)*100);
-    //     let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
-    //     return ({
-    //         'projectTitle': project.projectTitle,
-    //         'totalTasks': task.length,
-    //         'taskCompleted': taskCompleted.length,
-    //         'progress' : sumPercent.toFixed(2)
+        var sumCredits = totalTasks.length === 0 ? 0 : totalTasks.reduce((a, b) => a+b);
+        let percent = taskCompleted.map(item => (item.credits/sumCredits)*100);
+        let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
+        return ({
+            'projectTitle': project.projectRef.projectTitle,
+            'totalTasks': task.length,
+            'taskCompleted': taskCompleted.length,
+            'progress' : sumPercent.toFixed(2)
 
-    //     })
-    // }))
-    // res.send(test)
+        })
+    }))
+    res.send(data)
     } catch (error) {
         console.error(error)
         res.status(400).send({type:'error', message: error.message});
