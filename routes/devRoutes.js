@@ -44,7 +44,7 @@ router.post('/pm/team/update',verify.PM,require('../controller/pm/update.team.co
 //charts-----------------------
 router.get('/pm/chart/projects/percent',require('../routes/chartRoutes').projectPercentPM);
 router.get('/pm/chart/tasks/percent/:id',require('../routes/chartRoutes').taskPercent);
-//Update Project Tasks % of completion
+
 
 
 
@@ -76,13 +76,6 @@ router.post('/tl/project/task/update',verify.TL,require('../controller/tl/update
 //charts--------------------
 router.get('/tl/chart/projects/percent',require('../routes/chartRoutes').projectPercentTL);
 router.get('/tl/chart/tasks/percent/:id',require('../routes/chartRoutes').taskPercent);
-
-
-//todos-
-//update % of team work completion
-
-
-
 
 
 
