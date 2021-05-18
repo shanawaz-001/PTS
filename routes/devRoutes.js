@@ -41,7 +41,9 @@ router.get('/pm/teams/:projectRef',verify.PM, require('../routes/readRoutes').pr
 router.post('/pm/team/update',verify.PM,require('../controller/pm/update.team.controller'));
 //remove Project Team
 
-
+//charts-----------------------
+router.get('/pm/chart/projects/percent',require('../routes/chartRoutes').projectPercentPM);
+router.get('/pm/chart/tasks/percent/:id',require('../routes/chartRoutes').taskPercent);
 //Update Project Tasks % of completion
 
 

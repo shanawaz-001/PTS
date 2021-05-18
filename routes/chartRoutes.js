@@ -104,7 +104,6 @@ module.exports.devTask = async(req, res)=>{
         const not_started = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{taskRef: {path: 'taskRef'},status: 'NOT_STARTED'}}).count();
         const on_hold = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'ON_HOLD'}}).count();
         const completed = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'COMPLETED'}}).count();
-console.log(completed)
         res.status(200).send([
             { label:'Total',data: total},
             { label:'Not Started',data: not_started},
@@ -116,28 +115,85 @@ console.log(completed)
         res.status(400).send({type:'error', message:`can't connect to the server`});
     }
 }
+//for HR AND BDM -------------------------------------------------------------
+module.exports.projectPercent = async(req, res)=>{
+    try {
+        const projects = await Project.find().select('_id projectTitle');
+        
+        const test = await Promise.all(projects.map(async(project)=>{
+            
+            const task = await Task.find({projectRef: project._id})
+            const taskCompleted = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
+    
+            let totalTasks = task.map(item => item.credits);
 
-module.exports.propercent = async(req, res)=>{
+            var sumCredits = totalTasks.length === 0 ? 0 : totalTasks.reduce((a, b) => a+b);
+            let percent = taskCompleted.map(item => (item.credits/sumCredits)*100);
+            let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
+            return ({
+                'projectTitle': project.projectTitle,
+                'totalTasks': task.length,
+               'taskCompleted': taskCompleted.length,
+               'progress' : sumPercent.toFixed(2)
+
+            })
+        }))
+        res.send(test)
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({type:'error', message: error.message});
+    }
+}
+
+// FOR MANAGER -----------------------------------------------------------------------
+module.exports.projectPercentPM = async(req, res)=>{
     try {
         const token = req.header('authorization');
         const decode = jwt.decode(token);
-        const total = await Project.find({managerId: decode.id}).count();
-        const Completed = await Project.find({managerId: decode.id, isCompleted: true}).count();
-        const Complete = await Project.find({managerId: decode.id,isCompleted: false}).count();
-        const active = await assignedTask.find({devRef: decode.id}).populate('taskRef', null,{status: 'NOT_STARTED'}).count();
-        const not_started = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{taskRef: {path: 'taskRef'},status: 'NOT_STARTED'}}).count();
-        const on_hold = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'ON_HOLD'}}).count();
-        const completed = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'COMPLETED'}}).count();
-console.log(completed)
-        res.status(200).send([
-            { label:'Total',data: total},
-            { label:'Not Started',data: not_started},
-            { label:'Active',data: active},
-            { label:'On-hold',data: on_hold},
-            { label:'Completed',data: completed},
-        ])
+        const projects = await Project.find({managerId: decode.id}).select('_id projectTitle');
+        const test = await Promise.all(projects.map(async(project)=>{
+        const task = await Task.find({projectRef: project._id})
+        const taskCompleted = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
+
+        let totalTasks = task.map(item => item.credits);
+
+        var sumCredits = totalTasks.length === 0 ? 0 : totalTasks.reduce((a, b) => a+b);
+        let percent = taskCompleted.map(item => (item.credits/sumCredits)*100);
+        let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
+        return ({
+            'projectTitle': project.projectTitle,
+            'totalTasks': task.length,
+            'taskCompleted': taskCompleted.length,
+            'progress' : sumPercent.toFixed(2)
+
+        })
+    }))
+    res.send(test)
     } catch (error) {
-        res.status(400).send({type:'error', message:`can't connect to the server`});
+        console.error(error)
+        res.status(400).send({type:'error', message: error.message});
     }
 }
 
+//-------------
+module.exports.taskPercent = async(req, res)=>{
+    try {
+
+            const task = await Task.find({projectRef: req.params.id}).select('credits')
+            const taskCompleted = await Task.find({projectRef: req.params.id,status: 'COMPLETED'},).select('credits');
+    
+            let totalTasks = task.map(item => item.credits);
+            var sumCredits = totalTasks.length === 0 ? 0 : totalTasks.reduce((a, b) => a+b);
+            let percent = taskCompleted.map(item => (item.credits/sumCredits)*100);
+            let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
+            res.status(200).send([
+                { label:'totalTasks',data: task.length},
+                { label:'taskCompleted',data: taskCompleted.length},
+                { label:'progress',data: sumPercent.toFixed(2)}
+            ])
+   
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({type:'error', message: error.message});
+    }
+}
