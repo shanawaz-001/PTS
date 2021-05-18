@@ -133,7 +133,7 @@ module.exports.projectPercent = async(req, res)=>{
             return ({
                 'projectTitle': project.projectTitle,
                 'totalTasks': task.length,
-                'taskCompleted': taskCompleted.length,
+                'taskCompleted': taskCompletedCredits.length,
                 'progress' : sumPercent.toFixed(2)
 
             })
