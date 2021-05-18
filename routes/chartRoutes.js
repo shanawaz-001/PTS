@@ -100,7 +100,7 @@ module.exports.devTask = async(req, res)=>{
         const token = req.header('authorization');
         const decode = jwt.decode(token);
         const total = await assignedTask.find({devRef: decode.id}).count();
-        const active = await assignedTask.find({devRef: decode.id}).populate('taskRef', null,{status: 'NOT_STARTED'}).count();
+        const active = await assignedTask.find({devRef: decode.id}).populate('taskRef',{status: 'NOT_STARTED'}).count();
         const not_started = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{taskRef: {path: 'taskRef'},status: 'NOT_STARTED'}}).count();
         const on_hold = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'ON_HOLD'}}).count();
         const completed = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'COMPLETED'}}).count();
