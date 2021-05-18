@@ -123,18 +123,57 @@ module.exports.projectPercent = async(req, res)=>{
         const data = await Promise.all(projects.map(async(project)=>{
             
             const task = await Task.find({projectRef: project._id})
-            const taskCompleted = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
+            const taskCompletedCredits = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
     
-            let totalTasks = task.map(item => item.credits);
+            let totalTasksCredits = task.map(item => item.credits);
 
-            var sumCredits = totalTasks.length === 0 ? 0 : totalTasks.reduce((a, b) => a+b);
-            let percent = taskCompleted.map(item => (item.credits/sumCredits)*100);
+            var sumCredits = totalTasksCredits.length === 0 ? 0 : totalTasksCredits.reduce((a, b) => a+b);
+            let percent = taskCompletedCredits.map(item => (item.credits/sumCredits)*100);
             let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
             return ({
                 'projectTitle': project.projectTitle,
                 'totalTasks': task.length,
-               'taskCompleted': taskCompleted.length,
-               'progress' : sumPercent.toFixed(2)
+                'taskCompleted': taskCompleted.length,
+                'progress' : sumPercent.toFixed(2)
+
+            })
+        }))
+        res.send(data)
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({type:'error', message: error.message});
+    }
+}
+//-----------------------
+module.exports.projectData = async(req, res)=>{
+    try {
+        const projects = await Project.find().populate('managerId','name');
+        const data = await Promise.all(projects.map(async(project)=>{
+            var manager;
+            if(project.managerId) manager = project.managerId.name;
+            else manager = null
+            console.log(manager)
+            const task = await Task.find({projectRef: project._id})
+            const taskNotStarted = await Task.find({projectRef: project._id,status: 'NOT_STARTED'}).count();
+            const taskActive = await Task.find({projectRef: project._id,status: 'ACTIVE'}).count();
+            const taskOnhold = await Task.find({projectRef: project._id,status: 'ON_HOLD'}).count();
+            const taskCompletedCredits = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
+            let totalTasksCredits = task.map(item => item.credits);
+            var sumCredits = totalTasksCredits.length === 0 ? 0 : totalTasksCredits.reduce((a, b) => a+b);
+            let percent = taskCompletedCredits.map(item => (item.credits/sumCredits)*100);
+            let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
+            
+            return ({
+                'projectTitle': project.projectTitle,
+                'projectManager': manager,
+                'startDate':project.startDate,
+                'endDate':project.endDate,
+                'totalTasks': task.length,
+                'taskCompleted': taskCompletedCredits.length,
+                'taskNotStarted': taskNotStarted,
+                'taskActive': taskActive,
+                'taskOnhold': taskOnhold,
+                'progress' : sumPercent.toFixed(2)
 
             })
         }))
@@ -145,6 +184,9 @@ module.exports.projectPercent = async(req, res)=>{
     }
 }
 
+
+
+
 // FOR MANAGER -----------------------------------------------------------------------
 module.exports.projectPercentPM = async(req, res)=>{
     try {
@@ -153,17 +195,17 @@ module.exports.projectPercentPM = async(req, res)=>{
         const projects = await Project.find({managerId: decode.id}).select('_id projectTitle');
         const data = await Promise.all(projects.map(async(project)=>{
         const task = await Task.find({projectRef: project._id})
-        const taskCompleted = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
+        const taskCompletedCredits = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
 
-        let totalTasks = task.map(item => item.credits);
+        let totalTasksCredits = task.map(item => item.credits);
 
-        var sumCredits = totalTasks.length === 0 ? 0 : totalTasks.reduce((a, b) => a+b);
-        let percent = taskCompleted.map(item => (item.credits/sumCredits)*100);
+        var sumCredits = totalTasksCredits.length === 0 ? 0 : totalTasksCredits.reduce((a, b) => a+b);
+        let percent = taskCompletedCredits.map(item => (item.credits/sumCredits)*100);
         let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
         return ({
             'projectTitle': project.projectTitle,
             'totalTasks': task.length,
-            'taskCompleted': taskCompleted.length,
+            'taskCompleted': taskCompletedCredits.length,
             'progress' : sumPercent.toFixed(2)
 
         })
@@ -187,17 +229,17 @@ module.exports.projectPercentTL = async(req, res)=>{
         .select('projectRef projectTitle')
         const data = await Promise.all(team.map(async(project)=>{
         const task = await Task.find({projectRef: project.projectRef})
-        const taskCompleted = await Task.find({projectRef: project.projectRef._id,status: 'COMPLETED'},).select('credits');
+        const taskCompletedCredits = await Task.find({projectRef: project.projectRef._id,status: 'COMPLETED'},).select('credits');
 
-        let totalTasks = task.map(item => item.credits);
+        let totalTasksCredits = task.map(item => item.credits);
 
-        var sumCredits = totalTasks.length === 0 ? 0 : totalTasks.reduce((a, b) => a+b);
-        let percent = taskCompleted.map(item => (item.credits/sumCredits)*100);
+        var sumCredits = totalTasksCredits.length === 0 ? 0 : totalTasksCredits.reduce((a, b) => a+b);
+        let percent = taskCompletedCredits.map(item => (item.credits/sumCredits)*100);
         let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
         return ({
             'projectTitle': project.projectRef.projectTitle,
             'totalTasks': task.length,
-            'taskCompleted': taskCompleted.length,
+            'taskCompleted': taskCompletedCredits.length,
             'progress' : sumPercent.toFixed(2)
 
         })
@@ -214,15 +256,15 @@ module.exports.taskPercent = async(req, res)=>{
     try {
 
             const task = await Task.find({projectRef: req.params.id}).select('credits')
-            const taskCompleted = await Task.find({projectRef: req.params.id,status: 'COMPLETED'},).select('credits');
+            const taskCompletedCredits = await Task.find({projectRef: req.params.id,status: 'COMPLETED'},).select('credits');
     
-            let totalTasks = task.map(item => item.credits);
-            var sumCredits = totalTasks.length === 0 ? 0 : totalTasks.reduce((a, b) => a+b);
-            let percent = taskCompleted.map(item => (item.credits/sumCredits)*100);
+            let totalTasksCredits = task.map(item => item.credits);
+            var sumCredits = totalTasksCredits.length === 0 ? 0 : totalTasksCredits.reduce((a, b) => a+b);
+            let percent = taskCompletedCredits.map(item => (item.credits/sumCredits)*100);
             let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
             res.status(200).send([
                 { label:'totalTasks',data: task.length},
-                { label:'taskCompleted',data: taskCompleted.length},
+                { label:'taskCompleted',data: taskCompletedCredits.length},
                 { label:'progress',data: sumPercent.toFixed(2)}
             ])
    
