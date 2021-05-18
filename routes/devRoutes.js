@@ -75,6 +75,7 @@ router.post('/tl/project/task/update',verify.TL,require('../controller/tl/update
 
 //charts--------------------
 router.get('/tl/chart/projects/percent',require('../routes/chartRoutes').projectPercentTL);
+router.get('/tl/chart/tasks/percent/:id',require('../routes/chartRoutes').taskPercent);
 
 
 //todos-
