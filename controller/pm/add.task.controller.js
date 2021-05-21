@@ -1,4 +1,5 @@
 const Task = require('../../models/projectTaskModel');
+const Project = require('../../models/projectModel');
 module.exports = async(req, res)=>{
     const {taskDesc, priority, status, projectRef}=req.body;
     try {
@@ -9,7 +10,9 @@ module.exports = async(req, res)=>{
             projectRef   
         },async(er,dt)=>{
             if(er) return res.status(400).send({type:'error',message: er.message});
-            return res.status(200).send({type:'success',message:'A new task is added'});
+            await Project.findByIdAndUpdate(projectRef,{
+                isCompleted : false
+            }).then(data => res.status(200).send({type:'success',message:'A new task is added'}))
         })
     } catch (error) {
         console.error(error);

@@ -1,6 +1,4 @@
 const jwt = require('jsonwebtoken');
-const router = require("express").Router();
-const User = require('../models/userModel');
 const Employee = require('../models/employeeModel');
 const Project = require('../models/projectModel')
 const Task = require('../models/projectTaskModel');
@@ -164,7 +162,10 @@ module.exports.projectData = async(req, res)=>{
             let totalTasksCredits = task.map(item => item.credits);
             var sumCredits = totalTasksCredits.length === 0 ? 0 : totalTasksCredits.reduce((a, b) => a+b);
             let percent = taskCompletedCredits.map(item => (item.credits/sumCredits)*100);
-            let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
+            let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => {
+                a+b
+            });
+            
             
             return ({
                 'projectTitle': project.projectTitle,
@@ -176,7 +177,7 @@ module.exports.projectData = async(req, res)=>{
                 'taskNotStarted': taskNotStarted,
                 'taskActive': taskActive,
                 'taskOnhold': taskOnhold,
-                'progress' : sumPercent.toFixed(2)
+                'progress' : sumPercent.toFixed(2),
 
             })
         }))
