@@ -153,7 +153,6 @@ module.exports.projectData = async(req, res)=>{
             var manager;
             if(project.managerId) manager = project.managerId.name;
             else manager = null
-            console.log(manager)
             const task = await Task.find({projectRef: project._id})
             const taskNotStarted = await Task.find({projectRef: project._id,status: 'NOT_STARTED'}).countDocuments();
             const taskActive = await Task.find({projectRef: project._id,status: 'ACTIVE'}).countDocuments();
@@ -162,10 +161,7 @@ module.exports.projectData = async(req, res)=>{
             let totalTasksCredits = task.map(item => item.credits);
             var sumCredits = totalTasksCredits.length === 0 ? 0 : totalTasksCredits.reduce((a, b) => a+b);
             let percent = taskCompletedCredits.map(item => (item.credits/sumCredits)*100);
-            let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => {
-                a+b
-            });
-            
+            let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
             
             return ({
                 'projectTitle': project.projectTitle,
@@ -177,7 +173,7 @@ module.exports.projectData = async(req, res)=>{
                 'taskNotStarted': taskNotStarted,
                 'taskActive': taskActive,
                 'taskOnhold': taskOnhold,
-                'progress' : sumPercent.toFixed(2),
+                'progress' : sumPercent.toFixed(2)
 
             })
         }))
