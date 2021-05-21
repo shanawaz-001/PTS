@@ -10,12 +10,12 @@ const Team = require('../models/projectTeamModel');
 // employees---------------------------------------
 module.exports.emp = async(req, res)=>{
     try {
-       const emp =  await Employee.find().count();
-       const empDev = await Employee.find({designation:process.env.DEV}).count();
-       const empHr = await Employee.find({designation: process.env.HR}).count();
-       const empBdm = await Employee.find({designation: process.env.BDM}).count();
-       const Pm = await Project.find({managerId: {$ne: null}}).count();
-       const Tl = await Team.find({teamLeader: {$ne: null}}).count();
+       const emp =  await Employee.find().countDocuments();
+       const empDev = await Employee.find({designation:process.env.DEV}).countDocuments();
+       const empHr = await Employee.find({designation: process.env.HR}).countDocuments();
+       const empBdm = await Employee.find({designation: process.env.BDM}).countDocuments();
+       const Pm = await Project.find({managerId: {$ne: null}}).countDocuments();
+       const Tl = await Team.find({teamLeader: {$ne: null}}).countDocuments();
        const Dev = empDev-Pm-Tl;
        res.status(200).send([
            { label:'Total',data:emp},
@@ -32,9 +32,9 @@ module.exports.emp = async(req, res)=>{
 //For BDM-----------------------------------------------------------------------------------------------------
 module.exports.empStatus = async(req, res)=>{
     try {
-       const emp =  await Employee.find().count();
-        const empActive = await Employee.find({status: process.env.ACTIVE}).count();
-        const empInactive = await Employee.find({status: process.env.INACTIVE}).count();
+       const emp =  await Employee.find().countDocuments();
+        const empActive = await Employee.find({status: process.env.ACTIVE}).countDocuments();
+        const empInactive = await Employee.find({status: process.env.INACTIVE}).countDocuments();
         res.status(200).send([
             { label:'Total',data:emp},
             { label:'Active',data:empActive},
@@ -47,9 +47,9 @@ module.exports.empStatus = async(req, res)=>{
 //Projects------------------------------------
 module.exports.projects = async(req, res)=>{
     try {
-       const projects =  await Project.find().count();
-       const projectCompleted = await Project.find({isCompleted: true}).count();
-       const projectInComplete = await Project.find({isCompleted: false}).count();
+       const projects =  await Project.find().countDocuments();
+       const projectCompleted = await Project.find({isCompleted: true}).countDocuments();
+       const projectInComplete = await Project.find({isCompleted: false}).countDocuments();
        res.status(200).send([
            { label:'Total',data: projects},
            { label:'Completed',data: projectCompleted},
@@ -62,10 +62,10 @@ module.exports.projects = async(req, res)=>{
 //tasks---------------------------------------
 module.exports.taskPriority = async(req, res)=>{
     try {
-       const tasks =  await Task.find().count();
-       const taskPlow = await Task.find({priority: 'LOW'}).count();
-       const taskPnrml = await Task.find({priority: 'NORMAL'}).count();
-       const taskPhigh = await Task.find({priority: 'HIGH'}).count();
+       const tasks =  await Task.find().countDocuments();
+       const taskPlow = await Task.find({priority: 'LOW'}).countDocuments();
+       const taskPnrml = await Task.find({priority: 'NORMAL'}).countDocuments();
+       const taskPhigh = await Task.find({priority: 'HIGH'}).countDocuments();
        res.status(200).send([
            { label:'Total',data: tasks},
            { label:'Low',data: taskPlow},
@@ -78,11 +78,11 @@ module.exports.taskPriority = async(req, res)=>{
 }
 module.exports.taskStatus = async(req, res)=>{
     try {
-       const tasks =  await Task.find().count();
-       const taskSntstarted = await Task.find({status: 'NOT_STARTED'}).count();
-       const taskSActive = await Task.find({status: 'ACTIVE'}).count();
-       const taskSOnhold = await Task.find({status: 'ON_HOLD'}).count();
-       const taskSCmptd = await Task.find({status: 'COMPLETED'}).count();
+       const tasks =  await Task.find().countDocuments();
+       const taskSntstarted = await Task.find({status: 'NOT_STARTED'}).countDocuments();
+       const taskSActive = await Task.find({status: 'ACTIVE'}).countDocuments();
+       const taskSOnhold = await Task.find({status: 'ON_HOLD'}).countDocuments();
+       const taskSCmptd = await Task.find({status: 'COMPLETED'}).countDocuments();
        res.status(200).send([
            { label:'Total',data: tasks},
            { label:'Not Started',data: taskSntstarted},
@@ -99,19 +99,22 @@ module.exports.devTask = async(req, res)=>{
     try {
         const token = req.header('authorization');
         const decode = jwt.decode(token);
-        const total = await assignedTask.find({devRef: decode.id}).count();
-        const active = await assignedTask.find({devRef: decode.id}).populate('taskRef',{status: 'NOT_STARTED'}).count();
-        const not_started = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{taskRef: {path: 'taskRef'},status: 'NOT_STARTED'}}).count();
-        const on_hold = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'ON_HOLD'}}).count();
-        const completed = await assignedTask.find({devRef: decode.id}).populate({path: 'taskRef', match:{status: 'COMPLETED'}}).count();
-        res.status(200).send([
-            { label:'Total',data: total},
-            { label:'Not Started',data: not_started},
-            { label:'Active',data: active},
-            { label:'On-hold',data: on_hold},
-            { label:'Completed',data: completed},
-        ])
+        const total = await assignedTask.find({devRef: decode.id});
+        var tasks = total.map(item => item.taskRef);
+        const taskSntstarted = await Task.find({_id: {$in : tasks},status: 'NOT_STARTED'}).countDocuments();
+       const taskSActive = await Task.find({_id: {$in : tasks},status: 'ACTIVE'}).countDocuments();
+       const taskSOnhold = await Task.find({_id: {$in : tasks},status: 'ON_HOLD'}).countDocuments();
+       const taskSCmptd = await Task.find({_id: {$in : tasks},status: 'COMPLETED'}).countDocuments();
+       res.status(200).send([
+           { label:'Total',data: tasks.length},
+           { label:'Not Started',data: taskSntstarted},
+           { label:'Active',data: taskSActive},
+           { label:'On-hold',data: taskSOnhold},
+           { label:'Completed',data: taskSCmptd},
+       ])
+        // .populate({path: 'taskRef', match:{status: 'ACTIVE'}}).select('taskRef')
     } catch (error) {
+        console.error(error)
         res.status(400).send({type:'error', message:`can't connect to the server`});
     }
 }
@@ -154,9 +157,9 @@ module.exports.projectData = async(req, res)=>{
             else manager = null
             console.log(manager)
             const task = await Task.find({projectRef: project._id})
-            const taskNotStarted = await Task.find({projectRef: project._id,status: 'NOT_STARTED'}).count();
-            const taskActive = await Task.find({projectRef: project._id,status: 'ACTIVE'}).count();
-            const taskOnhold = await Task.find({projectRef: project._id,status: 'ON_HOLD'}).count();
+            const taskNotStarted = await Task.find({projectRef: project._id,status: 'NOT_STARTED'}).countDocuments();
+            const taskActive = await Task.find({projectRef: project._id,status: 'ACTIVE'}).countDocuments();
+            const taskOnhold = await Task.find({projectRef: project._id,status: 'ON_HOLD'}).countDocuments();
             const taskCompletedCredits = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
             let totalTasksCredits = task.map(item => item.credits);
             var sumCredits = totalTasksCredits.length === 0 ? 0 : totalTasksCredits.reduce((a, b) => a+b);
