@@ -4,6 +4,7 @@ const Team = require('../../models/projectTeamModel');
 module.exports = async(req, res) =>{
     try {
         const {devRef, taskRef} = req.body;
+        let teammembers;
         await assignTask.create({devRef,taskRef},
             async (err, data)=>{
                 if(err){
@@ -20,7 +21,7 @@ module.exports = async(req, res) =>{
                     .exec(async(e,d)=>{
                         if(e) res.status(400).send({tyep: 'error', message: e.message})
                         else{
-                            let teammembers = d.teamMembers
+                            teammembers = d.teamMembers
                             teammembers = teammembers.map(dev=>({
                                 devRef: dev.devRef,
                                 _id: dev._id,
