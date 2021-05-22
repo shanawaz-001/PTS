@@ -26,7 +26,7 @@ module.exports = async(req, res) =>{
                                 _id: dev._id,
                                 isAssigned: dev.devRef == req.body.devRef ? true : dev.isAssigned
                             }))
-                            Team.findByIdAndUpdate(d._id,{$set: {teamMembers: teammembers}},{new:true},async(er,dt)=>{
+                            Team.findByIdAndUpdate(d._id,{$set: {teamMembers: teammembers}},{new:true, upsert:true},async(er,dt)=>{
                                 if(er) res.send({type:'error',message:er.message})
                                 else res.status(200).send({type:'success', message:'Task assigned'})
                             })

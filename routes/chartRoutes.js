@@ -12,13 +12,13 @@ module.exports.emp = async(req, res)=>{
        const empDev = await Employee.find({designation:process.env.DEV}).countDocuments();
        const empHr = await Employee.find({designation: process.env.HR}).countDocuments();
        const empBdm = await Employee.find({designation: process.env.BDM}).countDocuments();
-       const Pm = await Project.find({managerId: {$ne: null}}).countDocuments();
-       const Tl = await Team.find({teamLeader: {$ne: null}}).countDocuments();
-       const Dev = empDev-Pm-Tl;
+       const Pm = await Project.find({managerId:{$ne: null}}).distinct('managerId');
+       const Tl = await Team.find({teamLeader: {$ne: null}}).distinct('teamLeader');
+       const Dev = (empDev)-(Pm.length)-(Tl.length);
        res.status(200).send([
            { label:'Total',data:emp},
-           {label: 'Project Managers', data: Pm},
-           {label: 'Team Leaders', data: Tl},
+           {label: 'Project Managers', data: Pm.length},
+           {label: 'Team Leaders', data: Tl.length},
            { label:'Human Resource Manager',data:empHr},
            { label:'Business Development Manager',data:empBdm},
            { label:'Developer',data:Dev},
