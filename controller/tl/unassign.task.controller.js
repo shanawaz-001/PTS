@@ -9,7 +9,7 @@ module.exports = async(req, res) =>{
                 if(err) return res.status(400).send({type:'error', message: err.message});
                 else{
                     const team = await Team.findOne({teamMembers:{$elemMatch:{devRef : req.body.devRef}}})
-                    .exec((e,d)=>{
+                    .exec(async(e,d)=>{
                         if(e) res.status(400).send({tyep: 'error', message: e.message})
                         else{
                             let teammembers = d.teamMembers
@@ -18,7 +18,7 @@ module.exports = async(req, res) =>{
                                 _id: dev._id,
                                 isAssigned: dev.devRef == req.body.devRef ? false : dev.isAssigned
                             }))
-                            Team.findByIdAndUpdate(d._id,{$set: {teamMembers: teammembers}},{new:true, upsert:true},async(er,dt)=>{
+                            await Team.findByIdAndUpdate(d._id,{$set: {teamMembers: teammembers}},{new:true, upsert:true},async(er,dt)=>{
                                 if(er) res.send({type:'error',message:er.message})
                                 else res.status(200).send({type:'success', message:'Task unassigned'})
                             })
