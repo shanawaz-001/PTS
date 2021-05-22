@@ -263,7 +263,6 @@ module.exports.taskPercent = async(req, res)=>{
             let percent = taskCompletedCredits.map(item => (item.credits/sumCredits)*100);
             let sumPercent = percent.length ===0 ? 0 : percent.reduce((a,b) => a+b);
             res.status(200).send([
-                { label:'totalTasks',data: task.length},
                 { label:'taskCompleted',data: taskCompletedCredits.length},
                 { label:'taskIncomplete',data: task.length - taskCompletedCredits.length},
                 { label:'progress',data: sumPercent.toFixed(2)}
