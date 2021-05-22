@@ -124,7 +124,7 @@ module.exports.projectPercent = async(req, res)=>{
         const data = await Promise.all(projects.map(async(project)=>{
             
             const task = await Task.find({projectRef: project._id})
-            const taskCompletedCredits = await Task.find({projectRef: project._id,status: 'COMPLETED'},).select('credits');
+            const taskCompletedCredits = await Task.find({projectRef: project._id,status: 'COMPLETED'}).select('credits');
     
             let totalTasksCredits = task.map(item => item.credits);
 
