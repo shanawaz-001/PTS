@@ -16,7 +16,7 @@ module.exports = async(req, res) =>{
                             teammembers = teammembers.map(dev=>({
                                 devRef: dev.devRef,
                                 _id: dev._id,
-                                isAssigned: dev.devRef == req.body.devRef ? false : dev.isAssigned
+                                isAssigned: dev.devRef.toString() == req.body.devRef ? false : dev.isAssigned
                             }))
                             await Team.findByIdAndUpdate(d._id,{$set: {teamMembers: teammembers}},{new:true, upsert:true},async(er,dt)=>{
                                 if(er) res.send({type:'error',message:er.message})
